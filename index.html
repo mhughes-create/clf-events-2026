@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CLF 2026 Events Planning Sync</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --black: #0a0a0a;
+      --off-white: #f8f7f4;
+      --border: #e4e0d8;
+      --muted: #888;
+
+      --deb: #2563eb;
+      --deb-light: #eff6ff;
+
+      --derek: #7c3aed;
+      --derek-light: #f5f3ff;
+
+      --judene: #059669;
+      --judene-light: #ecfdf5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--off-white);
+      color: var(--black);
+      line-height: 1.5;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--black);
+      color: #fff;
+      padding: 36px 48px 32px;
+    }
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    header h1 { font-size: clamp(20px, 3vw, 32px); font-weight: 700; }
+    header h1 span { color: #c9a84c; }
+    .header-meta { font-size: 13px; color: #999; margin-top: 6px; }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #ccc;
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── MAIN ── */
+    main { max-width: 1280px; margin: 0 auto; padding: 40px 40px 80px; }
+
+    /* ── MONTH SECTION ── */
+    .month-section { margin-bottom: 48px; }
+
+    .month-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .month-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--black);
+    }
+    .month-dates {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .month-count {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── CARDS GRID ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── EVENT CARD ── */
+    .event-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* owner banner */
+    .owner-banner {
+      padding: 6px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .owner-banner::before {
+      content: '';
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+    .banner-deb    { background: var(--deb);    color: #fff; }
+    .banner-derek  { background: var(--derek);  color: #fff; }
+    .banner-judene { background: var(--judene); color: #fff; }
+    .banner-multi  { background: var(--black);  color: #c9a84c; }
+
+    .card-top {
+      padding: 10px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 7px;
+    }
+
+    /* legacy — keep for align section */
+    .who-chip {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .chip-deb    { background: var(--deb-light);    color: var(--deb); }
+    .chip-derek  { background: var(--derek-light);  color: var(--derek); }
+    .chip-judene { background: var(--judene-light); color: var(--judene); }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag {
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tag-date   { background: #f1f5f9; color: #475569; }
+    .tag-city   { background: #fef9c3; color: #854d0e; }
+    .tag-type   { background: #f0fdf4; color: #166534; }
+    .tag-collab { background: #fdf4ff; color: #7e22ce; }
+    .tag-priority { background: #fff1f2; color: #be123c; }
+
+    .card-body { padding: 10px 14px 12px; flex: 1; display: flex; flex-direction: column; }
+
+    .card-detail { margin-bottom: 6px; }
+    .card-detail:last-of-type { margin-bottom: 0; }
+    .detail-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1px;
+    }
+    .detail-value { font-size: 11.5px; color: #333; line-height: 1.5; }
+
+    /* ── FILL-IN FIELDS ── */
+    .fill-fields {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .fill-field-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #aaa;
+      margin-bottom: 3px;
+    }
+    .fill-line {
+      height: 22px;
+      border: none;
+      border-bottom: 1px solid #e8e4dc;
+      background: transparent;
+      font-family: inherit;
+      font-size: 11.5px;
+      color: var(--black);
+      width: 100%;
+      padding: 0 2px;
+      outline: none;
+    }
+    .fill-line:focus { border-bottom-color: #bbb; }
+    .fill-line::placeholder { color: #d4cfc7; font-size: 11px; }
+
+    /* ── TBD SECTION ── */
+    .tbd-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      background: #f0ede8;
+      padding: 2px 10px;
+      border-radius: 4px;
+      margin-bottom: 18px;
+    }
+
+    /* ── ALIGN SECTION ── */
+    .align-section {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-top: 12px;
+    }
+    .align-section h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+    .align-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px;
+    }
+    .align-card {
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+    }
+    .align-theme { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .align-who { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+    .align-desc { font-size: 11.5px; color: #555; line-height: 1.5; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      color: #bbb;
+      border-top: 1px solid var(--border);
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Internal Planning · April 2026</div>
+  <h1>CLF 2026 <span>Events Planning</span> Sync</h1>
+  <div class="header-meta">Partner feedback consolidated — Sports, Entertainment &amp; CLF Networks</div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--deb)"></div> Deb · Apr 7</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--derek)"></div> Derek · Apr 7</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--judene)"></div> Judene · Apr 2</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════ MAY ══════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">May</div>
+      <div class="month-dates">May 12 – 31</div>
+      <div class="month-count">5 events</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="event-card">
+        <div class="owner-banner banner-judene">Judene</div>
+        <div class="card-top">
+          <div class="card-title">Cannes Film Festival</div>
+          <div class="card-tags">
+            <span class="tag tag-date">May 12–23</span>
+            <span class="tag tag-city">Cannes</span>
+            <span class="tag tag-type">Festival</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Focus</div>
+            <div class="detail-value">Strong likelihood of CLF presence — engagement with guild members and entertainment industry network</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-deb">Deb</div>
+        <div class="card-top">
+          <div class="card-title">Boston Tech Week — Cultural + Founder Dinner</div>
+          <div class="card-tags">
+            <span class="tag tag-date">May 26–31</span>
+            <span class="tag tag-city">Boston</span>
+            <span class="tag tag-type">Dinner</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Potential Guests</div>
+            <div class="detail-value">Jaylen Brown + Boston-based cultural leaders</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Goal</div>
+            <div class="detail-value">Deepen relationships across Boston founders, CLF executives, and cultural figures</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Also</div>
+            <div class="detail-value">Same weekend as Roots Picnic — potential overlap with Jimmy Rollins and Meek Mill</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-derek">Derek</div>
+        <div class="card-top">
+          <div class="card-title">Boston Tech Week — Aly Raisman Fireside Chat</div>
+          <div class="card-tags">
+            <span class="tag tag-date">May 26–31</span>
+            <span class="tag tag-city">Boston</span>
+            <span class="tag tag-type">Fireside Chat</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-value">Aly Raisman (multi-gold medal Olympian) — topic: human performance + investing</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-derek">Derek</div>
+        <div class="card-top">
+          <div class="card-title">Boston Tech Week — TD Garden Activation</div>
+          <div class="card-tags">
+            <span class="tag tag-date">May 26–31</span>
+            <span class="tag tag-city">Boston</span>
+            <span class="tag tag-type">Activation</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-value">Off-hours gathering at TD Garden — hoops + drinks, with Waleed ("unofficial cultural mayor of Boston")</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-derek">Derek</div>
+        <div class="card-top">
+          <div class="card-title">Boston Tech Week — Founder Dinner</div>
+          <div class="card-tags">
+            <span class="tag tag-date">May 26–31</span>
+            <span class="tag tag-city">Boston</span>
+            <span class="tag tag-type">Dinner</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-value">Intimate dinner for key operators and founders in the Northeast tech ecosystem</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════ JUNE ══════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">June</div>
+      <div class="month-dates">Jun 1 – 26</div>
+      <div class="month-count">4 events</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="event-card">
+        <div class="owner-banner banner-deb">Deb</div>
+        <div class="card-top">
+          <div class="card-title">NY Tech Week — Sports-Focused Dinner</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jun 1–7</span>
+            <span class="tag tag-city">NYC</span>
+            <span class="tag tag-type">Dinner</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Audience</div>
+            <div class="detail-value">LPs + portfolio companies</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Goal</div>
+            <div class="detail-value">Deepen engagement across sports + tech network</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-derek">Derek</div>
+        <div class="card-top">
+          <div class="card-title">NY Tech Week — Kalshi Conversation</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jun 1–7</span>
+            <span class="tag tag-city">NYC</span>
+            <span class="tag tag-priority">Priority</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-value">CLF-hosted discussion with Kalshi — high-interest, thought-provoking conversation</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-derek">Derek</div>
+        <div class="card-top">
+          <div class="card-title">NY Tech Week — UTA Dinner</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jun 1–7, Early Week</span>
+            <span class="tag tag-city">NYC</span>
+            <span class="tag tag-collab">Co-host: UTA</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-value">UTA interested in co-hosting a dinner with CLF — likely earlier in the week</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-judene">Judene</div>
+        <div class="card-top">
+          <div class="card-title">Cannes Lions</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jun 22–26</span>
+            <span class="tag tag-city">Cannes</span>
+            <span class="tag tag-type">Festival</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">Strong likelihood of CLF presence</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Focus</div>
+            <div class="detail-value">Engagement with guild members · Broader entertainment industry network</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════ JULY ══════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">July</div>
+      <div class="month-dates">Jul 10 – 28</div>
+      <div class="month-count">3 events</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="event-card">
+        <div class="owner-banner banner-deb">Deb</div>
+        <div class="card-top">
+          <div class="card-title">Sports Network Dinner — Pre-Jay-Z Show at Yankee Stadium</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jul 10–12</span>
+            <span class="tag tag-city">NYC</span>
+            <span class="tag tag-type">Dinner</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Venue</div>
+            <div class="detail-value">ZZ's — same room as Pascal dinner. Hold date if aligned.</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Co-host</div>
+            <div class="detail-value">Yankees + attending players</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Note</div>
+            <div class="detail-value">High existing interest (MFG). Proven format — no need to reinvent. Overlaps with internal break timing.</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-deb">Deb</div>
+        <div class="card-top">
+          <div class="card-title">WNBA All-Star Weekend</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jul 25</span>
+            <span class="tag tag-city">Chicago</span>
+            <span class="tag tag-type">Cultural Moment</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Focus</div>
+            <div class="detail-value">Women's sports and the leaders shaping the future of the space</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Opportunity</div>
+            <div class="detail-value">Convene around a major cultural and sports moment</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-judene">Judene</div>
+        <div class="card-top">
+          <div class="card-title">NOBLE Conference — Private Dinner with Black Chiefs</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Jul 24–28</span>
+            <span class="tag tag-city">Texas</span>
+            <span class="tag tag-type">Dinner + EBC</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">What is NOBLE?</div>
+            <div class="detail-value">National Org. of Black Law Enforcement Executives — Chiefs of Police across the U.S. Proposal submitted.</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Format</div>
+            <div class="detail-value">Abbreviated EBC + co-hosted dinner · 20–25 people · Co-hosted with Colonel Glover + NOBLE Emerging Tech Board</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Goal</div>
+            <div class="detail-value">Relationship-building ("breaking bread") — bridge nonprofit + tech ecosystems</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">To Confirm</div>
+            <div class="detail-value">Date conflicts with Summer House — need to align</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════ OCTOBER ══════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">October</div>
+      <div class="month-dates">Oct 12–18</div>
+      <div class="month-count">2 events</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="event-card">
+        <div class="owner-banner banner-derek">Derek</div>
+        <div class="card-top">
+          <div class="card-title">LA Tech Week — Future of Creativity Panel</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Oct 12–18</span>
+            <span class="tag tag-city">LA</span>
+            <span class="tag tag-type">Panel</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Topic</div>
+            <div class="detail-value">Intersection of creativity, technology, and the founder journey — building products for global scale</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Format</div>
+            <div class="detail-value">75–90 min · Live or recorded creative component (real-time demo) · ~60–75 attendees</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Venue Options</div>
+            <div class="detail-value">a16z LA office (~49 cap, may be limiting) · External studio · Apple Music or Spotify</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-multi">Derek · Deb · Judene</div>
+        <div class="card-top">
+          <div class="card-title">LA Tech Week — Investor / Ecosystem Dinner</div>
+          <div class="card-tags">
+            <span class="tag tag-date">Oct 12–18</span>
+            <span class="tag tag-city">LA</span>
+            <span class="tag tag-collab">Co-host: Deb + Judene</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Audience</div>
+            <div class="detail-value">Business managers / fund managers · Investors managing capital for high-profile individuals · Broadlight Capital, Plus Capital</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════ TBD ══════════ -->
+  <div class="month-section">
+    <div class="month-header">
+      <div class="month-name">TBD</div>
+      <div class="month-dates">Date not yet confirmed</div>
+      <div class="month-count">4 events</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="event-card">
+        <div class="owner-banner banner-deb">Deb</div>
+        <div class="card-top">
+          <div class="card-title">LP Engagement Dinners</div>
+          <div class="card-tags">
+            <span class="tag tag-type">Dinner Series</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Format</div>
+            <div class="detail-value">Intimate dinners (e.g., Gibson's or similar PDR)</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Audience Mix</div>
+            <div class="detail-value">LPs, non-WNBA athletes, broader ecosystem partners</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-deb">Deb</div>
+        <div class="card-top">
+          <div class="card-title">a16z CLF × Athletes First Dinner</div>
+          <div class="card-tags">
+            <span class="tag tag-city">NYC or LA</span>
+            <span class="tag tag-collab">Collab</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-value">Highly curated, intentional dinner — separate from Athletes First Summit (Jun 15, Park City)</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-judene">Judene</div>
+        <div class="card-top">
+          <div class="card-title">CLF LP / Network Nurture Event — London</div>
+          <div class="card-tags">
+            <span class="tag tag-city">London</span>
+            <span class="tag tag-type">Network Event</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">Early-stage exploration</div>
+          </div>
+          <div class="card-detail">
+            <div class="detail-label">Potential Anchors</div>
+            <div class="detail-value">Infinite Machine activation · Wimbledon or another sports-related moment</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="owner-banner banner-judene">Judene</div>
+        <div class="card-top">
+          <div class="card-title">AD + GTM Collaboration — Executive Briefing</div>
+          <div class="card-tags">
+            <span class="tag tag-city">D.C. or AZ</span>
+            <span class="tag tag-collab">Collab: AD + GTM</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-detail">
+            <div class="detail-label">Format</div>
+            <div class="detail-value">In-person EBC-style · Portfolio company participation · Modeled after "Leading Cities" format</div>
+          </div>
+          <div class="fill-fields">
+            <div><div class="fill-field-label">Target Guest List</div><input class="fill-line" type="text" placeholder="Add names..."/></div>
+            <div><div class="fill-field-label">Business Purpose</div><input class="fill-line" type="text" placeholder="Add purpose..."/></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════ WHERE WE ALIGN ══════════ -->
+  <div class="align-section">
+    <h2>Where We Align</h2>
+    <div class="align-grid">
+
+      <div class="align-card">
+        <div class="align-theme">Tech Weeks — All Markets</div>
+        <div class="align-who">
+          <span class="who-chip chip-deb">Deb</span>
+          <span class="who-chip chip-derek">Derek</span>
+          <span class="who-chip chip-judene">Judene</span>
+        </div>
+        <div class="align-desc">All three have proposed activations across Boston, NYC, and LA. Need to sequence and avoid overlap across markets.</div>
+      </div>
+
+      <div class="align-card">
+        <div class="align-theme">LA Investor Dinner</div>
+        <div class="align-who">
+          <span class="who-chip chip-derek">Derek</span>
+          <span class="who-chip chip-deb">Deb</span>
+          <span class="who-chip chip-judene">Judene</span>
+        </div>
+        <div class="align-desc">Derek proposed; Deb + Judene co-hosting. Direct three-way collaboration already identified for LA Tech Week.</div>
+      </div>
+
+      <div class="align-card">
+        <div class="align-theme">Boston Moment</div>
+        <div class="align-who">
+          <span class="who-chip chip-deb">Deb</span>
+          <span class="who-chip chip-derek">Derek</span>
+        </div>
+        <div class="align-desc">Deb sees a cultural/sports dinner; Derek sees a fireside + TD Garden activation + founder dinner. Opportunity to combine into one cohesive Boston footprint.</div>
+      </div>
+
+      <div class="align-card">
+        <div class="align-theme">Cannes</div>
+        <div class="align-who">
+          <span class="who-chip chip-judene">Judene</span>
+        </div>
+        <div class="align-desc">Two distinct windows — Film Festival (May 12–23) and Cannes Lions (Jun 22–26). Align on which to prioritize and who attends.</div>
+      </div>
+
+      <div class="align-card">
+        <div class="align-theme">Epigraph Fellowship</div>
+        <div class="align-who">
+          <span class="who-chip chip-judene">Judene</span>
+          <span class="who-chip chip-derek">Derek</span>
+          <span class="who-chip chip-deb">Deb</span>
+        </div>
+        <div class="align-desc">Selection process aligned between CLF + MACRO. Final cohort impacts downstream programming across all verticals.</div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>CLF 2026 Events Planning Sync · Internal Use Only</footer>
+
+</body>
+</html>
